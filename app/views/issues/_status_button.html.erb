@@ -1,13 +1,16 @@
 <%
 	if StatusButton::Hooks.is_open?(@project)
 %>
-<tr><th class="status"><%= l(:field_status) + "-->" %></th><td class="status" colspan=3><%
+<table id="status-button">
+<tr>
+  <th class="status"><span class="field-status"><%= l(:field_status) %></span><span class="denominator"><%= "-->" %></span></th>
+<td class="statuses"><%
 # Returns an array of statuses that user is able to apply
 def all_new_statuses_allowed_to(issue)
 	user = User.current
 	old_statuses = []
 	statuses = [issue.status].compact
-	
+
 	# check all reachables status for all roles the user owns
 	while (old_statuses != statuses)
 		new_statuses = statuses - old_statuses
@@ -35,13 +38,14 @@ else
 end
 for status in display_statuses
 	if @issue.status == status
-		%><b>[<%= status.name %>]</b>&emsp;<%
+		%><b class="current-status">[<%= status.name %>]</b>&emsp;<%
 	else
-		%>[<%= link_to_if allowed_statuses.include?(status),
-						status.name, "javascript:make_status(#{status.id})" %>]&emsp;<%
+		%><span class=<%= "status-#{status.id}" %>>[<%= link_to_if allowed_statuses.include?(status),
+						status.name, "javascript:make_status(#{status.id})" %>]</span>&emsp;<%
 	end
 end
 %></td></tr>
+</table>
 <%= javascript_include_tag "status_button.js", :plugin => 'status_button' %>
 <%
 	end
